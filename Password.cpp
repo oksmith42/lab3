@@ -6,14 +6,22 @@ using namespace std;
 
 Password::Password()
 {
-   viable_words = new ListArray<String>;
-   all_words= new ListArray<String>;
+   viable_words = new ListArray<String>();
+   all_words= new ListArray<String>();
    len = 0;
 }
 
 Password::~Password()
 {
-   delete[]all_words;
+   ListArrayIterator<String>* iter = all_words->iterator();
+
+   while(iter->hasNext())
+   {
+      String* word = iter->next();
+      delete word;
+   }
+
+   delete iter;
    delete all_words;
    delete viable_words;
    len = 0;
@@ -21,7 +29,7 @@ Password::~Password()
 
 void Password::addWord(String* word)
 {
-   if (len = 0)
+   if (len == 0)
    {
       len = word->length();
       viable_words->add(word);
@@ -41,7 +49,7 @@ void Password::addWord(String* word)
 int Password::getNumMatches(String* curr_word, String* word_guess)
 {
    int count = 0;
-   for(int i = 0; i <= curr_word->length(); i++)  // how do I use private variable len?
+   for(int i = 0; i < len; i++)  // how do I use private variable len? 
    {
       if(curr_word->charAt(i) == word_guess->charAt(i))
       {
@@ -54,24 +62,35 @@ int Password::getNumMatches(String* curr_word, String* word_guess)
 
 void Password::guess(int try_password, int num_matches)
 {
-
+   ListArray<String>* list = new ListArray<String>();
    for(int i = 1; i <= viable_words->size(); i++)
    {
-      String* word = viable_words->get(i);
-      int matches = getNumMatches(try_password, word);
-      if(matches != num_matches)
+      int matches = getNumMatches(all_words->get(try_password), viable_words->get(i)); 
+      if(matches == num_matches)
       {
-         viable_words->remove(i);
+         list->add(viable_words->get(i));
       }
 
    }
+
+   delete viable_words;
+   viable_words = list;
    
 }
 
+int Password::getNumberOfPasswordsLeft()
+{
+   return viable_words->size();
+}
 
-
-
-
+void Password::displayViableWords()
+{
+   for(int i = 1; i <= viable_words->size(); i++)
+   {
+      viable_words->get(i)->displayString();
+      cout << endl;
+   }
+}
 
 
 int Password::bestGuess()
@@ -133,4 +152,9 @@ int Password::bestGuess()
 
    delete all_iter;
    return best_guess_index;  //return a 1-based index into the all_words list of words (careful)
+}
+
+String* Password::getOriginalWord(int index)
+{
+   return all_words->get(index);
 }
