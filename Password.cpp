@@ -13,20 +13,58 @@ Password::Password()
 
 Password::~Password()
 {
-   delete[] viable_words;
-   delete viable_words;
    delete[]all_words;
    delete all_words;
+   delete viable_words;
    len = 0;
 }
 
 void Password::addWord(String* word)
 {
-   viable_words->add(word);
+   if (len = 0)
+   {
+      len = word->length();
+      viable_words->add(word);
+      all_words->add(word);
+   }
+   else if (len == word->length())
+   {
+      viable_words->add(word);
+      all_words->add(word);
+   }
+   else
+   {
+      return;
+   }
+}
+
+int Password::getNumMatches(String* curr_word, String* word_guess)
+{
+   int count = 0;
+   for(int i = 0; i <= curr_word->length(); i++)  // how do I use private variable len?
+   {
+      if(curr_word->charAt(i) == word_guess->charAt(i))
+      {
+         count++;
+      }
+   }
+
+   return count;
 }
 
 void Password::guess(int try_password, int num_matches)
 {
+
+   for(int i = 1; i <= viable_words->size(); i++)
+   {
+      String* word = viable_words->get(i);
+      int matches = getNumMatches(try_password, word);
+      if(matches != num_matches)
+      {
+         viable_words->remove(i);
+      }
+
+   }
    
 }
 
